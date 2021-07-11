@@ -7,21 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
-@Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class RoleType {
+public enum RoleType {
 
-    public static final String DEFAULT_ROLE = "ROLE_USER";
+    ROLE_USER, ROLE_ADMIN
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String roleName;
-
-    @OneToOne
-    private User user;
 }

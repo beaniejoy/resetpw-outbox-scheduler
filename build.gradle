@@ -54,6 +54,13 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
+configurations {
+    all {
+        // log4j2 적용을 위해 기존 spring boot에서 제공하는 logging exclude
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+}
+
 test {
     useJUnitPlatform()
 }

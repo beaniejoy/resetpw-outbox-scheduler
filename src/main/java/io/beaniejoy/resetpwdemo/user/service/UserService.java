@@ -4,14 +4,16 @@ import io.beaniejoy.resetpwdemo.user.domain.RoleType;
 import io.beaniejoy.resetpwdemo.user.domain.User;
 import io.beaniejoy.resetpwdemo.user.dto.request.UserRegistrationRequest;
 import io.beaniejoy.resetpwdemo.user.dto.response.UserRegistrationResponse;
-import io.beaniejoy.resetpwdemo.user.exception.error.RoleTypeNotFoundException;
+import io.beaniejoy.resetpwdemo.user.dto.response.UserSearchResponse;
 import io.beaniejoy.resetpwdemo.user.exception.error.UserEmailExistedException;
-import io.beaniejoy.resetpwdemo.user.repository.RoleTypeRepository;
 import io.beaniejoy.resetpwdemo.user.repository.UserRepository;
 import io.beaniejoy.resetpwdemo.user.security.JavaPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,21 +24,19 @@ public class UserService {
 
     private final JavaPasswordEncoder javaPasswordEncoder;
 
-    private final RoleTypeRepository roleTypeRepository;
-
     public UserRegistrationResponse registerUser(UserRegistrationRequest resource) {
 
         userRepository.findByEmail(resource.getEmail())
-                .orElseThrow(() -> new UserEmailExistedException(resource.getEmail()));
+                .ifPresent(user -> {
+                    throw new UserEmailExistedException(user.getEmail());
+                });
 
         String salt = javaPasswordEncoder.generateSalt();
         String password = resource.getPassword();
         String encodedPassword = javaPasswordEncoder.encode(password, salt);
 
-        RoleType roleType = roleTypeRepository.findByRoleName(RoleType.DEFAULT_ROLE)
-                .orElseThrow(() -> new RoleTypeNotFoundException(RoleType.DEFAULT_ROLE)); // 회원가입시 기본 USER 권한
-
-        User registeredUser = userRepository.save(toEntityForSignUp(resource, encodedPassword, roleType, salt));
+        User registeredUser = userRepository.save(
+                toEntityForSignUp(resource, encodedPassword, RoleType.ROLE_USER, salt));
 
         return toResponseRegistration(registeredUser);
     }
@@ -62,6 +62,23 @@ public class UserService {
                 .id(user.getId())
                 .userName(user.getUserName())
                 .email(user.getEmail())
+                .build();
+    }
+
+    public List<UserSearchResponse> findAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::toResponseSearch)
+                .collect(Collectors.toList());
+    }
+
+    private UserSearchResponse toResponseSearch(User user) {
+        return UserSearchResponse.builder()
+                .id(user.getId())
+                .userName(user.getUserName())
+                .email(user.getEmail())
+                .address(user.getAddress())
+                .phoneNumber(user.getPhoneNumber())
+                .roleType(user.getRoleType())
                 .build();
     }
 }
