@@ -6,6 +6,7 @@ import io.beaniejoy.resetpwdemo.user.exception.error.UserNotFoundException;
 import io.beaniejoy.resetpwdemo.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
 
-
+    @Transactional(readOnly = true)
     public UserInfoDto findByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));

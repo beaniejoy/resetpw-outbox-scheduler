@@ -7,6 +7,7 @@ import io.beaniejoy.resetpwdemo.user.dto.response.UserInfoDto;
 import io.beaniejoy.resetpwdemo.user.dto.response.UserRegistrationResponse;
 import io.beaniejoy.resetpwdemo.user.dto.response.UserSearchResponse;
 import io.beaniejoy.resetpwdemo.user.service.AuthService;
+import io.beaniejoy.resetpwdemo.user.service.UserPasswordResetService;
 import io.beaniejoy.resetpwdemo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class UserController {
 
     private final AuthService authService;
 
+    private final UserPasswordResetService userPasswordResetService;
     // 회원가입 API
     @PostMapping("/user")
     public ResponseEntity<UserRegistrationResponse> signUp(@RequestBody UserRegistrationRequest resource) throws URISyntaxException {
@@ -39,7 +41,11 @@ public class UserController {
     // 비밀번호 초기화 작업을 위한 이메일 발송 API
     @PostMapping("/find-password")
     public ResponseEntity<String> findPassword(@RequestBody UserEmailRequestDto resource) {
+        // 입력받은 email 주소가 실제 존재하는 사용자인지 조회
         UserInfoDto userInfoDto = authService.findByEmail(resource.getEmail());
+        // password 초기화를 위한 Key 발급 및 테이블 저장
+        userPasswordResetService.saveResetKey(userInfoDto.getUserEmail(), userInfoDto.getUserName());
+
         return ResponseEntity.ok("비밀번호 초기화를 위한 이메일 전송이 완료되었습니다.");
     }
 
