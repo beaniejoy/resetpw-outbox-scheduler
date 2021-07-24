@@ -42,9 +42,7 @@ dependencies {
     // main sender
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-    runtimeOnly 'mysql:mysql-connector-java'
-    // flyway
-    implementation "org.flywaydb:flyway-core:${flywayVersion}"
+    implementation 'com.h2database:h2'
 
     // shedlock
     implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
