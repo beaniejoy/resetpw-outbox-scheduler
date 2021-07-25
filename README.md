@@ -13,8 +13,20 @@
 
 ![outbox_pattern](https://user-images.githubusercontent.com/41675375/125115655-98976e80-e126-11eb-9b84-451c59caa644.png)
 
-## Run Application (미완료)
+## Run Application
 
+### Local Env
+```shell
+$ ./gradlew clean build --exclude-task test
+
+$ java -jar \
+  -Dspring.profiles.active=dev,mail \
+  -Dmail.username=<MAIL_ADDRESS> \
+  -Dmail.password=<PW or App PW> \
+  ./build/libs/*.jar
+```
+
+### Docker(추후 적용)
 ```bash
 $ ./gradlew clean build --exclude-task test
 
