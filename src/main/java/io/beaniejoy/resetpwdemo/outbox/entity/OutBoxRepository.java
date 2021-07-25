@@ -1,6 +1,11 @@
 package io.beaniejoy.resetpwdemo.outbox.entity;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OutBoxRepository extends CrudRepository<OutBox, Long> {
+import java.util.List;
+
+public interface OutBoxRepository extends JpaRepository<OutBox, Long> {
+    List<OutBox> findAll();
+
+    void deleteAllByIdIn(List<Long> outBoxIds);
 }
